@@ -1,6 +1,6 @@
 # Griddler::Mandrill
-[![Build Status](https://secure.travis-ci.org/wingrunr21/griddler-mandrill.svg)](https://travis-ci.org/wingrunr21/griddler-mandrill)
-[![Dependency Status](http://img.shields.io/gemnasium/badges/griddler-mandrill.svg?style=flat)](https://gemnasium.com/wingrunr21/griddler-mandrill)
+[![Build Status](http://img.shields.io/travis/wingrunr21/griddler-mandrill.svg?style=flat)](https://travis-ci.org/wingrunr21/griddler-mandrill)
+[![Dependency Status](http://img.shields.io/gemnasium/wingrunr21/griddler-mandrill.svg?style=flat)](https://gemnasium.com/wingrunr21/griddler-mandrill)
 [![Gem Version](http://img.shields.io/gem/v/griddler-mandrill.svg?style=flat)](https://rubygems.org/gems/griddler-mandrill)
 
 This is an adapter that allows [Griddler](https://github.com/thoughtbot/griddler) to be used with [Mandrill's Inbound Email Processing](http://help.mandrill.com/entries/21699367-Inbound-Email-Processing-Overview).
