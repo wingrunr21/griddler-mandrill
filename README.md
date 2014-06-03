@@ -1,8 +1,6 @@
 # Griddler::Mandrill
 
-This is an adapter that allows [Griddler](/thoughtbot/griddler) to be used with [Mandrill's Inbound Email Processing].
-
-[Mandrill's Inbound Email Processing]: http://help.mandrill.com/entries/21699367-Inbound-Email-Processing-Overview
+This is an adapter that allows [Griddler](https://github.com/thoughtbot/griddler) to be used with [Mandrill's Inbound Email Processing](http://help.mandrill.com/entries/21699367-Inbound-Email-Processing-Overview).
 
 ## Installation
 
@@ -14,8 +12,8 @@ Add this line to your application's Gemfile:
 
 ## Usage
 
-[thoughtbot](http://thoughtbot.com) has a blog post on how to use Griddler over on their blog, [Giant
-Robots](http://robots.thoughtbot.com/handle-incoming-email-with-griddler)
+[thoughtbot](http://thoughtbot.com) has a blog post on how to use Griddler over on their blog: [Giant
+Robots](http://robots.thoughtbot.com/handle-incoming-email-with-griddler).
 
 ### Additional Setup
 
