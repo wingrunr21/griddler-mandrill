@@ -44,6 +44,17 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     expect(normalized_params[0][:attachments]).to be_empty
   end
 
+  it 'works with non-base64 encoded files' do
+    params = params_with_csv_attachment
+
+    normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+
+    file, = *normalized_params[0][:attachments]
+
+    expect(file.original_filename).to eq('file.csv')
+    expect(file.size).to eq(upload_3_params[:length])
+  end
+
   describe 'when the email has no text part' do
     before do
       @params = params_hash
@@ -135,6 +146,14 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     mandrill_events params.to_json
   end
 
+  def params_with_csv_attachment
+    params = params_hash
+    params[0][:msg][:attachments] = {
+      'file.csv' => upload_3_params
+    }
+    mandrill_events params.to_json
+  end
+
   def text_body
     <<-EOS.strip_heredoc.strip
       Dear bob
@@ -163,7 +182,8 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
         name: 'photo1.jpg',
         content: Base64.encode64(file.read),
         type: 'image/jpeg',
-        length: size
+        length: size,
+        base64: true
       }
     end
   end
@@ -176,7 +196,21 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
         name: 'photo2.jpg',
         content: Base64.encode64(file.read),
         type: 'image/jpeg',
-        length: size
+        length: size,
+        base64: true
+      }
+    end
+  end
+
+  def upload_3_params
+    @upload_2_params ||= begin
+      content = 'Some | csv | file | here'
+      {
+        name: 'file.csv',
+        content: content,
+        type: 'text/plain',
+        length: content.length,
+        base64: false
       }
     end
   end
