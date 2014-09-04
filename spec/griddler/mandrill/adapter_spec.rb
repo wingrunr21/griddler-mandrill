@@ -55,6 +55,13 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     expect(file.size).to eq(upload_3_params[:length])
   end
 
+  it 'works with filenames containing slashes' do
+    params = params_with_attachments_with_slashes
+
+    adapter = Griddler::Mandrill::Adapter.new(params)
+    expect{adapter.normalize_params}.to_not raise_error
+  end
+
   describe 'when the email has no text part' do
     before do
       @params = params_hash
@@ -146,6 +153,15 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     mandrill_events params.to_json
   end
 
+  def params_with_attachments_with_slashes
+    params = params_hash
+    params[0][:msg][:attachments] = {
+      '=?UTF-8?B?0JrQvtC/0LjRjyB0ZW5kZXJfMTJfcm9zdGEueGxz?=' => upload_4_params,
+      '=?UTF-8?B?0JrQvtC\0LjRjyB0ZW5kZXJfMTJfcm9zdGEueGxz?=' => upload_5_params
+    }
+    mandrill_events params.to_json
+  end
+
   def params_with_csv_attachment
     params = params_hash
     params[0][:msg][:attachments] = {
@@ -207,6 +223,32 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       content = 'Some | csv | file | here'
       {
         name: 'file.csv',
+        content: content,
+        type: 'text/plain',
+        length: content.length,
+        base64: false
+      }
+    end
+  end
+
+  def upload_4_params
+    @upload_4_params ||= begin
+      content = 'Some | csv | file | here'
+      {
+        name: '=?UTF-8?B?0JrQvtC/0LjRjyB0ZW5kZXJfMTJfcm9zdGEueGxz?=',
+        content: content,
+        type: 'image/jpeg',
+        type: 'text/plain',
+        base64: false
+      }
+    end
+  end
+
+  def upload_5_params
+    @upload_5_params ||= begin
+      content = 'Some | csv | file | here'
+      {
+        name: '=?UTF-8?B?0JrQvtC\0LjRjyB0ZW5kZXJfMTJfcm9zdGEueGxz?=',
         content: content,
         type: 'text/plain',
         length: content.length,

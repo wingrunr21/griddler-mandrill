@@ -60,7 +60,7 @@ module Griddler
       end
 
       def create_tempfile(attachment)
-        filename = attachment[:name]
+        filename = attachment[:name].gsub(/\/|\\/, '_')
         tempfile = Tempfile.new(filename, Dir::tmpdir, encoding: 'ascii-8bit')
         content = attachment[:content]
         content = Base64.decode64(content) if attachment[:base64]
