@@ -9,16 +9,19 @@ end
 describe Griddler::Mandrill::Adapter, '.normalize_params' do
   it 'normalizes parameters' do
     Griddler::Mandrill::Adapter.normalize_params(default_params).each do |params|
-      expect(params).to be_normalized_to({
-        to: ['The Token <token@reply.example.com>'],
-        cc: ['Emily <emily@example.mandrillapp.com>',
-             'Joey <joey@example.mandrillapp.com>'],
-        from: 'Hernan Example <hernan@example.com>',
-        subject: 'hello',
-        text: %r{Dear bob},
-        html: %r{<p>Dear bob</p>},
-        raw_body: %r{raw}
-      })
+      expect(params).to be_normalized_to(params_hash_normalized)
+    end
+  end
+
+  it 'does not process events that are not inbound' do
+    params = mixed_event_params
+
+    normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+
+    expect(JSON.parse(params[:mandrill_events]).size).to eq(4)
+    expect(normalized_params.size).to eq(2)
+    normalized_params.each do |params|
+      expect(params).to be_normalized_to(params_hash_normalized)
     end
   end
 
@@ -111,8 +114,31 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     mandrill_events (params * 2).to_json
   end
 
+  def mixed_event_params
+    mandrill_events ((params_hash * 2) + (mixed_params_hash*2)).to_json
+  end
+
   def mandrill_events(json)
     { mandrill_events: json }
+  end
+
+  def mixed_params_hash
+    [{
+      type: 'blacklist',
+      action: 'change',
+      reject: {
+        reason: 'hard-bounce',
+        detail: ' smtp;550 Requested action not taken: mailbox unavailable\n',
+        last_event_at: '2014-11-03 04:56:18',
+        email: 'herman@example.com',
+        created_at: '2014-08-07 04:59:20',
+        expires_at: '2014-11-24 04:56:18',
+        expired: false,
+        subaccount: nil,
+        sender: nil
+      },
+      ts: 1414990578
+    }]
   end
 
   def params_hash
@@ -142,6 +168,19 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
           sender: nil
         }
     }]
+  end
+
+  def params_hash_normalized
+    {
+      to: ['The Token <token@reply.example.com>'],
+      cc: ['Emily <emily@example.mandrillapp.com>',
+           'Joey <joey@example.mandrillapp.com>'],
+      from: 'Hernan Example <hernan@example.com>',
+      subject: 'hello',
+      text: %r{Dear bob},
+      html: %r{<p>Dear bob</p>},
+      raw_body: %r{raw}
+    }
   end
 
   def params_with_attachments
