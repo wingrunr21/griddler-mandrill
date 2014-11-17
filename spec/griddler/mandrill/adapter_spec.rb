@@ -156,6 +156,7 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
           to: [['token@reply.example.com', 'The Token']],
           cc: [['emily@example.mandrillapp.com', 'Emily'],
                ['joey@example.mandrillapp.com', 'Joey']],
+          bcc: [['hidden@example.mandrillapp.com', 'Roger']],
           subject: "hello",
           spam_report: {
             score: -0.8,
@@ -175,6 +176,7 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       to: ['The Token <token@reply.example.com>'],
       cc: ['Emily <emily@example.mandrillapp.com>',
            'Joey <joey@example.mandrillapp.com>'],
+      bcc: ['Roger <hidden@example.mandrillapp.com>'],
       from: 'Hernan Example <hernan@example.com>',
       subject: 'hello',
       text: %r{Dear bob},
