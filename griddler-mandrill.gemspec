@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Stafford Brunk']
   spec.email         = ['stafford.brunk@gmail.com']
   spec.summary       = %q{Mandrill adapter for Griddler}
-  spec.description   = %q{Adapter to allow the use of Mandrill's Inboud Email Processing with Griddler}
+  spec.description   = %q{Adapter to allow the use of Mandrill's Inbound Email Processing with Griddler}
   spec.homepage      = 'https://github.com/wingrunr21/griddler-mandrill'
   spec.license       = 'MIT'
 
