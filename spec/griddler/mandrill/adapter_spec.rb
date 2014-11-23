@@ -80,10 +80,40 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     end
   end
 
+  describe 'when the email text part is nil' do
+    before do
+      @params = params_hash
+      @params.first[:msg][:text] = nil
+    end
+
+    it 'sets :text to an empty string' do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      normalized_params.each do |p|
+        expect(p[:text]).to eq ''
+      end
+    end
+  end
+
   describe 'when the email has no html part' do
     before do
       @params = params_hash
       @params.first[:msg].delete(:html)
+    end
+
+    it 'sets :html to an empty string' do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      normalized_params.each do |p|
+        expect(p[:html]).to eq ''
+      end
+    end
+  end
+
+  describe 'when the email html part is nil' do
+    before do
+      @params = params_hash
+      @params.first[:msg][:html] = nil
     end
 
     it 'sets :html to an empty string' do
