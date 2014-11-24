@@ -18,8 +18,8 @@ module Griddler
             bcc: recipients(:bcc, event),
             from: full_email([ event[:from_email], event[:from_name] ]),
             subject: event[:subject],
-            text: event.fetch(:text, ''),
-            html: event.fetch(:html, ''),
+            text: event[:text] || '',
+            html: event[:html] || '',
             raw_body: event[:raw_msg],
             attachments: attachment_files(event)
           }
