@@ -1,3 +1,6 @@
+## 1.0.3 (master)
+* Replace `nil` for email text/html values with empty strings. #10 via [calleerlandsson](https://github.com/calleerlandsson)
+
 ## 1.0.2
 * Replace slashes in filenames with underscores for temp file creation. #5 and
   #6 via [ssidelnikov](https://github.com/ssidelnikov)
