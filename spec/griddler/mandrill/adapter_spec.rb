@@ -25,6 +25,14 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     end
   end
 
+  describe Griddler::Email do
+    it 'accepts the mandrill headers hash without error' do
+      params = mixed_event_params
+      params_to_send = Griddler::Mandrill::Adapter.normalize_params(params)
+      expect{Griddler::EmailParser.extract_headers(params_to_send.first[:headers])}.to_not raise_error(NoMethodError)
+    end
+  end
+
   it 'passes the received array of files' do
     params = params_with_attachments
 
