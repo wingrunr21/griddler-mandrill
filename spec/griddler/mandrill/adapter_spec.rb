@@ -25,6 +25,14 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     end
   end
 
+  describe Griddler::Email do
+    it 'accepts the mandrill headers hash without error' do
+      params = mixed_event_params
+      params_to_send = Griddler::Mandrill::Adapter.normalize_params(params)
+      expect{Griddler::EmailParser.extract_headers(params_to_send.first[:headers])}.to_not raise_error(NoMethodError)
+    end
+  end
+
   it 'passes the received array of files' do
     params = params_with_attachments
 
@@ -178,7 +186,9 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       msg:
         {
           raw_msg: 'raw',
-          headers: {},
+          headers: {"X-Mailer" => "Airmail (271)",
+                    "Mime-Version" => "1.0",
+                    "Content-Type" => "multipart/alternative; boundary=\"546876a7_66334873_aa8\""},
           text: text_body,
           html: text_html,
           from_email: 'hernan@example.com',
@@ -208,6 +218,9 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
            'Joey <joey@example.mandrillapp.com>'],
       bcc: ['Roger <hidden@example.mandrillapp.com>'],
       from: 'Hernan Example <hernan@example.com>',
+      headers: {"X-Mailer" => "Airmail (271)",
+                "Mime-Version" => "1.0",
+                "Content-Type" => "multipart/alternative; boundary=\"546876a7_66334873_aa8\""},
       subject: 'hello',
       text: %r{Dear bob},
       html: %r{<p>Dear bob</p>},
