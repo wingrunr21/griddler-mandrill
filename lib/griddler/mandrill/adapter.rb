@@ -16,7 +16,7 @@ module Griddler
             to: recipients(:to, event),
             cc: recipients(:cc, event),
             bcc: recipients(:bcc, event),
-            from: full_email([ event[:from_email], event[:from_name] ]),
+            from: from(event),
             subject: event[:subject],
             text: event[:text] || '',
             html: event[:html] || '',
@@ -36,8 +36,44 @@ module Griddler
         }.compact
       end
 
+      def from(event)
+        from_contact = full_email([ event[:from_email], event[:from_name] ])
+        # Attempt to get from contact from raw headers as a last resort
+        from_contact = header_contacts(:from, event).first if from_contact.nil?
+        from_contact
+      end
+
       def recipients(field, event)
-        Array.wrap(event[field]).map { |recipient| full_email(recipient) }
+        rcpts = Array.wrap(event[field]).map { |recipient| full_email(recipient) }
+        # Attempt to get recipients from raw headers as a last resort
+        rcpts = header_contacts(field, event) if rcpts.empty?
+        rcpts
+      end
+
+      def header_contacts(field, event)
+        case field
+        when :from
+          header_prefix = 'From:'
+        when :to
+          header_prefix = 'To:'
+        when :cc
+          header_prefix = 'Cc:'
+        when :bcc
+          header_prefix = 'Bcc:'
+        end
+
+        if event[:raw_msg].present? && matches = event[:raw_msg].match(/\n#{header_prefix}.+\n/i)
+          emails = matches.to_s.gsub!(/\n|#{header_prefix}/i,'')
+
+          return Array.wrap(emails.split(',').map { |email_info|
+            email = email_info.scan(email_regex).first
+            email_info.gsub!(/#{email}|<|>/i, '') #remove the email address
+            name = email_info.strip #name is whatever is left
+            full_email([ email, name ])
+          })
+        end
+
+        []
       end
 
       def full_email(contact_info)
@@ -68,6 +104,11 @@ module Griddler
         tempfile.write(content)
         tempfile.rewind
         tempfile
+      end
+
+      # http://www.regular-expressions.info/email.html
+      def email_regex
+        /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}\b/i
       end
     end
   end
