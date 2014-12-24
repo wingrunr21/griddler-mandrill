@@ -216,7 +216,7 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
         {
           raw_msg: %Q[Received: from SNT004-OMC2S19.example.com (unknown [10.10.10.10])
 \tby ip-10-10-10-10 (Postfix) with ESMTPS id 229D32C0086
-\tfor <delivery@email.joistapp.com>; Sat, 20 Dec 2014 01:29:03 +0000 (UTC)
+\tfor <delivery@example.com>; Sat, 20 Dec 2014 01:29:03 +0000 (UTC)
 Received: from SNT004-MC4F26.example.com ([10.10.10.10]) by SNT004-OMC2S19.example.com over TLS secured channel with Example SMTPSVC(7.5.7601.22751);
 \t Fri, 19 Dec 2014 17:29:01 -0800
 To: The Token <token@reply.example.com>
@@ -266,7 +266,7 @@ X-OriginalArrivalTime: 20 Dec 2014 01:29:01.0846 (UTC) FILETIME=[55C18360:01D01B
       html: %r{<p>Dear bob</p>},
       raw_body: %Q[Received: from SNT004-OMC2S19.example.com (unknown [10.10.10.10])
 \tby ip-10-10-10-10 (Postfix) with ESMTPS id 229D32C0086
-\tfor <delivery@email.joistapp.com>; Sat, 20 Dec 2014 01:29:03 +0000 (UTC)
+\tfor <delivery@example.com>; Sat, 20 Dec 2014 01:29:03 +0000 (UTC)
 Received: from SNT004-MC4F26.example.com ([10.10.10.10]) by SNT004-OMC2S19.example.com over TLS secured channel with Example SMTPSVC(7.5.7601.22751);
 \t Fri, 19 Dec 2014 17:29:01 -0800
 To: The Token <token@reply.example.com>
