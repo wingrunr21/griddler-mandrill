@@ -67,8 +67,9 @@ module Griddler
 
           return Array.wrap(emails.split(',').map { |email_info|
             email = email_info.scan(email_regex).first
-            email_info.gsub!(/#{email}|<|>/i, '') #remove the email address
-            name = email_info.strip #name is whatever is left
+            email_info.gsub!(/#{Regexp.escape(email)}|<|>/i, '') #remove the email address
+            name = email_info.strip
+            name = nil if name.empty? #name is whatever is left
             full_email([ email, name ])
           })
         end
