@@ -71,7 +71,7 @@ module Griddler
             name = email_info.strip
             name = nil if name.empty? #name is whatever is left
             full_email([ email, name ])
-          })
+          }) unless emails.blank?
         end
 
         []
