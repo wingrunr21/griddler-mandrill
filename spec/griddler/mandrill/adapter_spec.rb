@@ -129,6 +129,7 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     before do
       @params = params_hash
       @params.first[:msg][:cc] = nil
+      @params.first[:msg][:raw_msg] = nil
     end
 
     it 'should return an empty cc array' do
@@ -139,6 +140,42 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       end
     end
   end
+
+  describe 'when the from info is only in the headers' do
+    before do
+      @params = params_hash
+      @params.first[:msg][:from_email] = nil
+      @params.first[:msg][:from_name] = nil
+    end
+
+    it 'should return from info' do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      normalized_params.each do |p|
+        expect(p[:from]).to eq params_hash_normalized[:from]
+      end
+    end
+  end
+
+  describe 'when the recipients info is only in the headers' do
+    before do
+      @params = params_hash
+      @params.first[:msg][:to] = nil
+      @params.first[:msg][:cc] = nil
+      @params.first[:msg][:bcc] = nil
+    end
+
+    it 'should return recipients info' do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      normalized_params.each do |p|
+        expect(p[:to]).to eq params_hash_normalized[:to]
+        expect(p[:cc]).to eq params_hash_normalized[:cc]
+        expect(p[:bcc]).to eq params_hash_normalized[:bcc]
+      end
+    end
+  end
+
 
   def default_params(params = params_hash)
     mandrill_events (params * 2).to_json
@@ -177,7 +214,23 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       ts: 1364601140,
       msg:
         {
-          raw_msg: 'raw',
+          raw_msg: %Q[Received: from SNT004-OMC2S19.example.com (unknown [10.10.10.10])
+\tby ip-10-10-10-10 (Postfix) with ESMTPS id 229D32C0086
+\tfor <delivery@example.com>; Sat, 20 Dec 2014 01:29:03 +0000 (UTC)
+Received: from SNT004-MC4F26.example.com ([10.10.10.10]) by SNT004-OMC2S19.example.com over TLS secured channel with Example SMTPSVC(7.5.7601.22751);
+\t Fri, 19 Dec 2014 17:29:01 -0800
+To: The Token <token@reply.example.com>
+Cc: Emily <emily@example.mandrillapp.com>, Joey <joey@example.mandrillapp.com>
+Bcc: Roger <hidden@example.mandrillapp.com>
+Date: Fri, 19 Dec 2014 17:29:01 -0800
+Message-ID: <SNT004-MC4F26A05458643DDEA2F096C0CF680@phx.gbl>
+X-HM-Routing-Path:6SVjR9/XbxWrMmtiP1ZOER7LJ52F3qioXOfeqL5tnZVoOQ+Tnq8zDVZBtfs8e7oWVzErIgTVzQyg5uZQ+42Fbk+E2iAHdF1+A0tDg5+K+ocImVE+w3xCrLgFwxSkXSnjHjMv6fpaVXmYHVa1Zyay6yl0SV8i4O4lii7rfMLSxOA=
+Content-Type: text/html; charset=\"iso-8859-8-i\"
+From: Hernan Example <hernan@example.com>
+Subject: hello
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginalArrivalTime: 20 Dec 2014 01:29:01.0846 (UTC) FILETIME=[55C18360:01D01BF4]],
           headers: {},
           text: text_body,
           html: text_html,
@@ -211,7 +264,23 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       subject: 'hello',
       text: %r{Dear bob},
       html: %r{<p>Dear bob</p>},
-      raw_body: %r{raw}
+      raw_body: %Q[Received: from SNT004-OMC2S19.example.com (unknown [10.10.10.10])
+\tby ip-10-10-10-10 (Postfix) with ESMTPS id 229D32C0086
+\tfor <delivery@example.com>; Sat, 20 Dec 2014 01:29:03 +0000 (UTC)
+Received: from SNT004-MC4F26.example.com ([10.10.10.10]) by SNT004-OMC2S19.example.com over TLS secured channel with Example SMTPSVC(7.5.7601.22751);
+\t Fri, 19 Dec 2014 17:29:01 -0800
+To: The Token <token@reply.example.com>
+Cc: Emily <emily@example.mandrillapp.com>, Joey <joey@example.mandrillapp.com>
+Bcc: Roger <hidden@example.mandrillapp.com>
+Date: Fri, 19 Dec 2014 17:29:01 -0800
+Message-ID: <SNT004-MC4F26A05458643DDEA2F096C0CF680@phx.gbl>
+X-HM-Routing-Path:6SVjR9/XbxWrMmtiP1ZOER7LJ52F3qioXOfeqL5tnZVoOQ+Tnq8zDVZBtfs8e7oWVzErIgTVzQyg5uZQ+42Fbk+E2iAHdF1+A0tDg5+K+ocImVE+w3xCrLgFwxSkXSnjHjMv6fpaVXmYHVa1Zyay6yl0SV8i4O4lii7rfMLSxOA=
+Content-Type: text/html; charset=\"iso-8859-8-i\"
+From: Hernan Example <hernan@example.com>
+Subject: hello
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-OriginalArrivalTime: 20 Dec 2014 01:29:01.0846 (UTC) FILETIME=[55C18360:01D01BF4]]
     }
   end
 
