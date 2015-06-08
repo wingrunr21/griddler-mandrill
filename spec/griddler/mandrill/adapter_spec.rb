@@ -29,7 +29,8 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     it 'accepts the mandrill headers hash without error' do
       params = mixed_event_params
       params_to_send = Griddler::Mandrill::Adapter.normalize_params(params)
-      expect{Griddler::EmailParser.extract_headers(params_to_send.first[:headers])}.to_not raise_error(NoMethodError)
+      headers = Griddler::EmailParser.extract_headers(params_to_send.first[:headers])
+      expect{headers}.not_to raise_error
     end
   end
 
@@ -321,7 +322,6 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       {
         name: '=?UTF-8?B?0JrQvtC/0LjRjyB0ZW5kZXJfMTJfcm9zdGEueGxz?=',
         content: content,
-        type: 'image/jpeg',
         type: 'text/plain',
         base64: false
       }
