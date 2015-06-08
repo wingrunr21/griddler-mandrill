@@ -16,6 +16,7 @@ module Griddler
             to: recipients(:to, event),
             cc: recipients(:cc, event),
             bcc: recipients(:bcc, event),
+            headers: event[:headers],
             from: full_email([ event[:from_email], event[:from_name] ]),
             subject: event[:subject],
             text: event[:text] || '',
