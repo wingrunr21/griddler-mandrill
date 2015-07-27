@@ -149,6 +149,27 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     end
   end
 
+  describe 'when there the reception email is not in the TO nor the CCrecipients' do
+    before do
+      @params = params_hash
+      @params.first[:msg][:email] = "hidden@example.com"
+    end
+    it 'passes the email as a bcc recipient' do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      normalized_params.each do |p|
+        expect(p[:bcc]).to eq ['hidden <hidden@example.com>']
+      end
+    end
+    it 'passes the email in the email param' do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      normalized_params.each do |p|
+        expect(p[:email]).to eq 'hidden@example.com'
+      end
+    end
+  end
+
   def default_params(params = params_hash)
     mandrill_events (params * 2).to_json
   end
@@ -197,7 +218,6 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
           to: [['token@reply.example.com', 'The Token']],
           cc: [['emily@example.mandrillapp.com', 'Emily'],
                ['joey@example.mandrillapp.com', 'Joey']],
-          bcc: [['hidden@example.mandrillapp.com', 'Roger']],
           subject: "hello",
           spam_report: {
             score: -0.8,
@@ -217,7 +237,7 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       to: ['The Token <token@reply.example.com>'],
       cc: ['Emily <emily@example.mandrillapp.com>',
            'Joey <joey@example.mandrillapp.com>'],
-      bcc: ['Roger <hidden@example.mandrillapp.com>'],
+      bcc: [],
       from: 'Hernan Example <hernan@example.com>',
       headers: {"X-Mailer" => "Airmail (271)",
                 "Mime-Version" => "1.0",
@@ -225,7 +245,8 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       subject: 'hello',
       text: %r{Dear bob},
       html: %r{<p>Dear bob</p>},
-      raw_body: %r{raw}
+      raw_body: %r{raw},
+      email: "token@reply.example.com"
     }
   end
 
