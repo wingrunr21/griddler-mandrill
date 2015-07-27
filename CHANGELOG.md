@@ -1,4 +1,13 @@
-## 1.0.3 (master)
+## master
+
+## 1.1.2
+* Use Mandrill's `email` attribute to populate bcc if to and cc don't contain it. #19 and #20 via [Uelb](https://github.com/Uelb)
+
+## 1.1.1
+* Pin minimum Griddler version to >= 1.2.1 to resolve #18
+
+## 1.1.0
+* Allow email headers to be accessed. #12, #13, #14, and #17
 * Replace `nil` for email text/html values with empty strings. #10 via [calleerlandsson](https://github.com/calleerlandsson)
 
 ## 1.0.2
