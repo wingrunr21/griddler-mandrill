@@ -15,14 +15,15 @@ module Griddler
           {
             to: recipients(:to, event),
             cc: recipients(:cc, event),
-            bcc: recipients(:bcc, event),
+            bcc: resolve_bcc(event),
             headers: event[:headers],
             from: full_email([ event[:from_email], event[:from_name] ]),
             subject: event[:subject],
             text: event[:text] || '',
             html: event[:html] || '',
             raw_body: event[:raw_msg],
-            attachments: attachment_files(event)
+            attachments: attachment_files(event),
+            email: event[:email] # the email address where Mandrill received the message
           }
         end
       end
@@ -39,6 +40,15 @@ module Griddler
 
       def recipients(field, event)
         Array.wrap(event[field]).map { |recipient| full_email(recipient) }
+      end
+
+      def resolve_bcc(event)
+        email = event[:email]
+        if !event[:to].map(&:first).include?(email) && event[:cc] && !event[:cc].map(&:first).include?(email)
+          [full_email([email, email.split("@")[0]])]
+        else
+          []
+        end
       end
 
       def full_email(contact_info)
