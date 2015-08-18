@@ -11,7 +11,9 @@ module Griddler
       end
 
       def normalize_params
-        events.map do |event|
+        events.select do |event|
+          event[:spf].present? && (event[:spf][:result] == 'pass' || event[:spf][:result] == 'neutral')
+        end.map do |event|
           {
             to: recipients(:to, event),
             cc: recipients(:cc, event),
