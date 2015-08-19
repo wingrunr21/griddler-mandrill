@@ -1,5 +1,8 @@
 ## master
 
+## 1.1.3
+* Protect against SPF spoofing. #22 via [arunthampi](https://github.com/arunthampi)
+
 ## 1.1.2
 * Use Mandrill's `email` attribute to populate bcc if to and cc don't contain it. #19 and #20 via [Uelb](https://github.com/Uelb)
 
