@@ -44,10 +44,15 @@ module Griddler
 
       def resolve_bcc(event)
         email = event[:email]
-        if !event[:to].map(&:first).include?(email) && (!event[:cc] || !event[:cc].map(&:first).include?(email))
-          [full_email([email, email.split("@")[0]])]
-        else
+        if event[:to].map(&:first).include?(email)
+          # if the email is in the to array
           []
+        elsif event[:cc] && event[:cc].map(&:first).include?(email)
+          # if cc is not nil and the email is in the cc
+          []
+        else
+          # else it is not in the to nor in the cc array, so it's a bcc email
+          [full_email([email, email.split("@")[0]])]
         end
       end
 
