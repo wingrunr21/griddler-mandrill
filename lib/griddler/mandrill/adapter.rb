@@ -2,11 +2,13 @@ module Griddler
   module Mandrill
     class Adapter
       def initialize(params)
+      def initialize(params, config = {})
         @params = params
+        @config = config
       end
 
-      def self.normalize_params(params)
-        adapter = new(params)
+      def self.normalize_params(params, config = {})
+        adapter = new(params, config)
         adapter.normalize_params
       end
 
