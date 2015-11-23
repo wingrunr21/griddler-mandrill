@@ -44,7 +44,7 @@ module Griddler
 
       def resolve_bcc(event)
         email = event[:email]
-        if event[:to].map(&:first).include?(email)
+        if event[:to] && event[:to].map(&:first).include?(email)
           # if the email is in the to array
           []
         elsif event[:cc] && event[:cc].map(&:first).include?(email)
