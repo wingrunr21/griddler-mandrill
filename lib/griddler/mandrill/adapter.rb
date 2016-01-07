@@ -60,12 +60,17 @@ module Griddler
       end
 
       def attachment_files(event)
-        attachments = event[:attachments] || Array.new
-        attachments.map do |key, attachment|
+        files(event, :attachments) + files(event, :images)
+      end
+
+      def files(event, key)
+        files = event[key] || Hash.new
+
+        files.map do |key, file|
           ActionDispatch::Http::UploadedFile.new({
-            filename: attachment[:name],
-            type: attachment[:type],
-            tempfile: create_tempfile(attachment)
+            filename: file[:name],
+            type: file[:type],
+            tempfile: create_tempfile(file)
           })
         end
       end
