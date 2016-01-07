@@ -143,6 +143,19 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     end
   end
 
+  describe 'when the spf record is none' do
+    before do
+      @params = params_hash
+      @params.first[:msg][:spf] = { result: 'none', detail: '' }
+    end
+
+    it "does include emails that have the SPF result as 'none'" do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      expect(normalized_params.size).to eql 2
+    end
+  end
+
   describe 'when the email has no html part' do
     before do
       @params = params_hash
