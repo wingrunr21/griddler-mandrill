@@ -1,7 +1,11 @@
 module Griddler
   module Mandrill
     class Adapter
-      def initialize(params)
+      SPF_DEFAULT_CONFIG = {
+        validate: true,
+        whitelist: %w{pass neutral none}
+      }
+
       def initialize(params, config = {})
         @params = params
         @config = config
@@ -13,9 +17,7 @@ module Griddler
       end
 
       def normalize_params
-        events.select do |event|
-          event[:spf].present? && (event[:spf][:result] == 'pass' || event[:spf][:result] == 'neutral')
-        end.map do |event|
+        events.map do |event|
           {
             to: recipients(:to, event),
             cc: recipients(:cc, event),
@@ -28,8 +30,12 @@ module Griddler
             raw_body: event[:raw_msg],
             attachments: attachment_files(event),
             email: event[:email] # the email address where Mandrill received the message
-          }
-        end
+          } if spf_valid?(event)
+        end.compact
+      end
+
+      def spf_config
+        @spf_config ||= SPF_DEFAULT_CONFIG.merge(@config.fetch(:spf_config, {}))
       end
 
       private
@@ -83,6 +89,12 @@ module Griddler
         tempfile.write(content)
         tempfile.rewind
         tempfile
+      end
+
+      def spf_valid?(event)
+        return true if !spf_config[:validate]
+        spf = event[:spf]
+        spf.present? && spf_config[:whitelist].include?(spf[:result])
       end
     end
   end

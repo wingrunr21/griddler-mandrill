@@ -34,6 +34,29 @@ Once you have correctly configured Mandrill, you can go ahead and delete this co
 
 [Adding Routes]: http://help.mandrill.com/entries/21699367-Inbound-Email-Processing-Overview
 
+### Configuration
+
+This adapter supports specialized configuration:
+
+```ruby
+{
+  spf_config: {
+    validate: true,
+    whitelist: %w{pass neutral}
+  }
+}
+```
+
+You can set it like this:
+
+```ruby
+Griddler.configuration do |config|
+  config.extra_configuration = {
+
+  }
+end
+```
+
 ## Credits
 
 Griddler::Mandrill was extracted from Griddler by [Stafford Brunk](https://github.com/wingrunr21).
