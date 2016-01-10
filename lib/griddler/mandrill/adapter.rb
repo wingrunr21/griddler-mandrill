@@ -46,11 +46,8 @@ module Griddler
 
       def resolve_bcc(event)
         email = event[:email]
-        if !event[:to].map(&:first).include?(email) && event[:cc] && !event[:cc].map(&:first).include?(email)
-          [full_email([email, email.split("@")[0]])]
-        else
-          []
-        end
+        to_and_cc = (event[:to].to_a + event[:cc].to_a).compact.map(&:first)
+        to_and_cc.include?(email) ? [] : [full_email([email, email.split("@")[0]])]
       end
 
       def full_email(contact_info)
