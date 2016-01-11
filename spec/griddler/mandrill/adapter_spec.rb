@@ -209,6 +209,33 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     end
   end
 
+  describe 'resolve bcc when the email missing other recepient fields' do
+    before do
+      @params = params_hash   
+      @params.first[:msg][:email] = "hidden@example.com" 
+    end
+
+    it 'should return bcc email address when TO field is missing' do
+      @params.first[:msg].delete(:to)
+
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      normalized_params.each do |p|
+        expect(p[:bcc]).to eq ['hidden <hidden@example.com>']
+      end
+    end
+
+    it 'should return bcc email address when CC field is missing' do
+      @params.first[:msg].delete(:cc)
+
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      normalized_params.each do |p|
+        expect(p[:bcc]).to eq ['hidden <hidden@example.com>']
+      end
+    end
+  end
+
   def default_params(params = params_hash)
     mandrill_events (params * 2).to_json
   end
@@ -269,6 +296,10 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
           sender: nil
         }
     }]
+  end
+
+  def params_without_to
+    params_hash_normalized.except(:to)
   end
 
   def params_hash_normalized
