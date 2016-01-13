@@ -432,8 +432,7 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
         name: 'ii_111ecfcf901e123c',
         content: Base64.encode64(file.read),
         type: 'image/jpeg',
-        length: size,
-        base64: true
+        length: size
       }
     end
   end
@@ -446,8 +445,7 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
         name: 'ii_151ecfcf901e828c',
         content: Base64.encode64(file.read),
         type: 'image/jpeg',
-        length: size,
-        base64: true
+        length: size
       }
     end
   end
