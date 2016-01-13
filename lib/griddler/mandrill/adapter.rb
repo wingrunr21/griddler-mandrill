@@ -59,17 +59,7 @@ module Griddler
         end
       end
 
-      def add_base64_field(event, key, default_value)
-        if event[key]
-          event[key].each_value do |value| 
-            value[:base64] ||= default_value
-          end
-        end
-      end
-
       def attachment_files(event)
-        add_base64_field(event, :images, true)
-
         files(event, :attachments) + files(event, :images)
       end
 
@@ -77,6 +67,8 @@ module Griddler
         files = event[key] || Hash.new
 
         files.map do |key, file|
+          file[:base64] = true if !file.has_key?(:base64)
+
           ActionDispatch::Http::UploadedFile.new({
             filename: file[:name],
             type: file[:type],
