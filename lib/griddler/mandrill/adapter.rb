@@ -62,7 +62,7 @@ module Griddler
       def add_base64_field(event, key, default_value)
         if event[key]
           event[key].each_value do |value| 
-            value[:base64] = default_value if !value.has_key?(:base64)
+            value[:base64] ||= default_value
           end
         end
       end
