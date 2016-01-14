@@ -67,6 +67,8 @@ module Griddler
         files = event[key] || Hash.new
 
         files.map do |key, file|
+          file[:base64] = true if !file.has_key?(:base64)
+
           ActionDispatch::Http::UploadedFile.new({
             filename: file[:name],
             type: file[:type],
