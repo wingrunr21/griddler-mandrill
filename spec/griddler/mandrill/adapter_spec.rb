@@ -74,6 +74,20 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     expect{adapter.normalize_params}.to_not raise_error
   end
 
+  it 'works with inline images' do
+    params = params_with_inline_images
+
+    normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+
+    first, second = *normalized_params[0][:attachments]
+
+    expect(first.original_filename).to eq('ii_111ecfcf901e123c')
+    expect(first.size).to eq(upload_6_params[:length])
+
+    expect(second.original_filename).to eq('ii_151ecfcf901e828c')
+    expect(second.size).to eq(upload_7_params[:length])
+  end
+
   describe 'when the email has no text part' do
     before do
       @params = params_hash
@@ -101,6 +115,45 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       normalized_params.each do |p|
         expect(p[:text]).to eq ''
       end
+    end
+  end
+
+  describe 'when the spf record is softfail' do
+    before do
+      @params = params_hash
+      @params.first[:msg][:spf] = { result: 'softfail', detail: 'domain owner discourages use of this host' }
+    end
+
+    it "doesn't include emails that have failed the SPF test" do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      expect(normalized_params).to be_empty
+    end
+  end
+
+  describe 'when the spf record is fail' do
+    before do
+      @params = params_hash
+      @params.first[:msg][:spf] = { result: 'fail', detail: 'sender SPF fail' }
+    end
+
+    it "doesn't include emails that have failed the SPF test" do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      expect(normalized_params).to be_empty
+    end
+  end
+
+  describe 'when the spf record is neutral' do
+    before do
+      @params = params_hash
+      @params.first[:msg][:spf] = { result: 'neutral', detail: 'sender SPF neutral' }
+    end
+
+    it "does include emails that have the SPF result as 'neutral'" do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      expect(normalized_params.size).to eql 2
     end
   end
 
@@ -288,6 +341,15 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     mandrill_events params.to_json
   end
 
+  def params_with_inline_images
+    params = params_hash
+    params[0][:msg][:images] = {
+      'ii_151ecfcf901e828c' => upload_6_params,
+      'ii_111ecfcf901e123c' => upload_7_params
+    }
+    mandrill_events params.to_json
+  end
+
   def text_body
     <<-EOS.strip_heredoc.strip
       Dear bob
@@ -373,4 +435,31 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       }
     end
   end
+
+  def upload_6_params
+    @upload_6_params ||= begin
+      file = upload_1
+      size = file.size
+      {
+        name: 'ii_111ecfcf901e123c',
+        content: Base64.encode64(file.read),
+        type: 'image/jpeg',
+        length: size
+      }
+    end
+  end
+
+  def upload_7_params
+    @upload_7_params ||= begin
+      file = upload_2
+      size = file.size
+      {
+        name: 'ii_151ecfcf901e828c',
+        content: Base64.encode64(file.read),
+        type: 'image/jpeg',
+        length: size
+      }
+    end
+  end
+
 end
