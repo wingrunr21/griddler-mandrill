@@ -1,5 +1,9 @@
 ## master
 
+## 1.1.4
+* Add support for inline images. #27 and #29 [MicTech](https://github.com/MicTech)
+* Do not map non-existant to to bcc. #24
+
 ## 1.1.3
 * Protect against SPF spoofing. #22 via [arunthampi](https://github.com/arunthampi)
 
