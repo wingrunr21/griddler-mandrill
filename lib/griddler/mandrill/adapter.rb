@@ -60,7 +60,28 @@ module Griddler
       end
 
       def attachment_files(event)
-        files(event, :attachments) + files(event, :images)
+        files(event, :attachments) + files(event, :images) + inline_ics_files(event)
+      end
+
+      def inline_ics_files(event)
+        mail = Mail.new(event[:raw_msg])
+
+        ics_parts = mail.parts.select do |part|
+          !part.attachment? && part.mime_type =~ /text\/calendar/
+        end
+
+        ics_parts.map do |part|
+          file = {
+            content: part.body.to_s,
+            name: part.filename || "invite.ics"
+          }
+
+          ActionDispatch::Http::UploadedFile.new({
+            filename: file[:name],
+            type: part.mime_type,
+            tempfile: create_tempfile(file)
+          })
+        end
       end
 
       def files(event, key)

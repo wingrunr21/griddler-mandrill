@@ -88,6 +88,17 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     expect(second.size).to eq(upload_7_params[:length])
   end
 
+  it 'works with inline ics' do
+    params = params_with_inline_nonimage_attachment
+
+    normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+
+    expect(normalized_params[0][:attachments].size).to eq(1)
+    first = normalized_params[0][:attachments][0]
+
+    expect(first.original_filename).to eq('invite.ics')
+  end
+
   describe 'when the email has no text part' do
     before do
       @params = params_hash
@@ -335,6 +346,12 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       'ii_151ecfcf901e828c' => upload_6_params,
       'ii_111ecfcf901e123c' => upload_7_params
     }
+    mandrill_events params.to_json
+  end
+
+  def params_with_inline_nonimage_attachment
+    params = params_hash
+    params[0][:msg][:raw_msg] = File.read("spec/fixtures/invite_raw_email.txt").strip
     mandrill_events params.to_json
   end
 
