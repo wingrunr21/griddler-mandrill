@@ -25,7 +25,8 @@ module Griddler
             html: event[:html] || '',
             raw_body: event[:raw_msg],
             attachments: attachment_files(event),
-            email: event[:email] # the email address where Mandrill received the message
+            email: event[:email], # the email address where Mandrill received the message
+            spam_report: event[:spam_report]
           }
         end
       end
