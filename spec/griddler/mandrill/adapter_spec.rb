@@ -299,7 +299,11 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
       text: %r{Dear bob},
       html: %r{<p>Dear bob</p>},
       raw_body: %r{raw},
-      email: "token@reply.example.com"
+      email: "token@reply.example.com",
+      spam_report: {
+        "score" => -0.8,
+        "matched_rules" => '...'
+      }
     }
   end
 
