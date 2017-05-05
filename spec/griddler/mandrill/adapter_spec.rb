@@ -221,6 +221,18 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
         expect(p[:email]).to eq 'hidden@example.com'
       end
     end
+    describe "when the email has no cc recipients" do
+      before do
+        @params.first[:msg][:cc] = nil
+      end
+      it 'passes the email as a bcc recipient' do
+        params = default_params(@params)
+        normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+        normalized_params.each do |p|
+          expect(p[:bcc]).to eq ['hidden <hidden@example.com>']
+        end
+      end
+    end
   end
 
   def default_params(params = params_hash)
