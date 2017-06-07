@@ -12,6 +12,9 @@ Add this line to your application's Gemfile:
     gem 'griddler'
     gem 'griddler-mandrill'
 
+## SPF Spam filtering
+
+Please note that ONLY email received with SPF headers that are 'pass' or 'neutral' will be processed. Emails without SPF or with failing SPF will be silently swallowed and will not be set to your email processor.
 
 ## Usage
 
