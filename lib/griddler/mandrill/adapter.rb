@@ -5,14 +5,33 @@ module Griddler
         @params = params
       end
 
+      def self.allow_spf_none?
+        @allow_spf_none || false
+      end
+
+      def allow_spf_none?
+        self.class.allow_spf_none?
+      end
+
+      def self.allow_spf_none=(allow_spf_none)
+        @allow_spf_none = allow_spf_none
+      end
+
       def self.normalize_params(params)
         adapter = new(params)
         adapter.normalize_params
       end
 
+      def event_passes_spf?(event)
+        event[:spf].present? &&
+          ((event[:spf][:result] == 'pass' || event[:spf][:result] == 'neutral') ||
+          (allow_spf_none? && event[:spf][:result] == 'none'))
+      end
+
       def normalize_params
         events.select do |event|
-          event[:spf].present? && (event[:spf][:result] == 'pass' || event[:spf][:result] == 'neutral')
+          event_passes_spf?(event)
+
         end.map do |event|
           {
             to: recipients(:to, event),

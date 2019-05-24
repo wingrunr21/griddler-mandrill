@@ -37,6 +37,14 @@ Once you have correctly configured Mandrill, you can go ahead and delete this co
 
 [Adding Routes]: http://help.mandrill.com/entries/21699367-Inbound-Email-Processing-Overview
 
+#### Allowing domains without SPF configured
+Sometimes, due to circumstances outside our control, a domain may not have SPF set up. In those cases, you can set the adapter to pass results to your email processor.
+
+```
+Griddler::Mandrill::Adapter.allow_spf_none = true
+```
+
+
 ## Credits
 
 Griddler::Mandrill was extracted from Griddler by [Stafford Brunk](https://github.com/wingrunr21).

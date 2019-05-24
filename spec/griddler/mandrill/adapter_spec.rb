@@ -118,6 +118,33 @@ describe Griddler::Mandrill::Adapter, '.normalize_params' do
     end
   end
 
+  describe 'when the spf record is none' do
+    before do
+      @params = params_hash
+      @params.first[:msg][:spf] = { result: 'none', detail: '' }
+    end
+
+    it 'does not include the emails without spf results by default' do
+      params = default_params(@params)
+      normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+      expect(normalized_params).to be_empty
+    end
+
+    context 'when the adapter is configured to allow none' do
+      before do
+        Griddler::Mandrill::Adapter.allow_spf_none = true
+      end
+      after do
+        Griddler::Mandrill::Adapter.allow_spf_none = false
+      end
+      it 'includes the message' do
+        params = default_params(@params)
+        normalized_params = Griddler::Mandrill::Adapter.normalize_params(params)
+        expect(normalized_params).not_to be_empty
+      end
+    end
+  end
+
   describe 'when the spf record is softfail' do
     before do
       @params = params_hash
